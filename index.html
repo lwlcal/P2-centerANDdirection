@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小二數學：方向與中心位置 綜合互動學習平台</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", "Heiti TC", sans-serif;
+    background-color: #f0f7f7;
+    margin: 0;
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #2c3e50;
+  }
+  .header-card {
+    background: white;
+    padding: 18px 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+    margin-bottom: 15px;
+    max-width: 680px;
+    width: 95%;
+  }
+  h1 { color: #2c3e50; font-size: 24px; margin: 0 0 6px 0; }
+  .subtitle { font-size: 14px; color: #7f8c8d; margin: 0; }
+
+  /* 主分頁切換 Tabs */
+  .main-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    max-width: 680px;
+    width: 95%;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    background-color: #e2e8f0;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  .tab-btn.active {
+    background-color: #0d9488;
+    color: white;
+    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
+  }
+
+  /* 子練習分頁 Sub-tabs */
+  .sub-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    justify-content: center;
+  }
+  .sub-tab-btn {
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px solid #0d9488;
+    border-radius: 20px;
+    background-color: white;
+    color: #0d9488;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .sub-tab-btn.active {
+    background-color: #0d9488;
+    color: white;
+  }
+
+  /* 自選題目按鈕列 */
+  .q-selector-card {
+    background: white;
+    padding: 10px 15px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+  }
+  .q-selector-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #64748b;
+  }
+  .q-selector-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .q-num-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 2px solid #cbd5e1;
+    background-color: white;
+    color: #475569;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .q-num-btn:hover { border-color: #0d9488; color: #0d9488; }
+  .q-num-btn.active {
+    background-color: #0d9488;
+    color: white;
+    border-color: #0d9488;
+    box-shadow: 0 3px 8px rgba(13, 148, 136, 0.4);
+    transform: scale(1.08);
+  }
+  .q-num-btn.completed {
+    border-color: #10b981;
+    background-color: #ecfdf5;
+    color: #059669;
+  }
+  .q-num-btn.completed.active {
+    background-color: #059669;
+    color: white;
+    border-color: #059669;
+  }
+
+  /* 工具按鈕列 */
+  .control-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button.action-btn {
+    font-size: 14px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  button.action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.15); }
+  button.action-btn:active { transform: translateY(0); }
+  .btn-speech { background-color: #f59e0b; color: white; }
+  .btn-compass { background-color: #10b981; color: white; }
+  .btn-hint { background-color: #3b82f6; color: white; }
+  .btn-lang { background-color: #8b5cf6; color: white; }
+  .btn-reset { background-color: #ef4444; color: white; }
+
+  .game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 680px;
+    width: 95%;
+  }
+
+  .rule-card {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 10px 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    border: 1px solid #fde68a;
+  }
+
+  .question-box {
+    background: white;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 3px solid #0d9488;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    width: 100%;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    line-height: 1.4;
+  }
+  .q-subhint {
+    font-size: 14px;
+    color: #0284c7;
+    margin-top: 6px;
+    font-weight: normal;
+  }
+
+  .compass-tag {
+    font-weight: bold;
+    color: #dc2626;
+    margin-bottom: 8px;
+    font-size: 15px;
+    letter-spacing: 2px;
+    background: #fef08a;
+    padding: 3px 14px;
+    border-radius: 20px;
+    text-align: center;
+  }
+
+  /* 九宮格地圖 */
+  .grid-map {
+    display: grid;
+    grid-template-columns: repeat(3, 105px);
+    grid-template-rows: repeat(3, 105px);
+    gap: 10px;
+    background-color: #cbd5e1;
+    padding: 14px;
+    border-radius: 20px;
+    border: 4px solid #64748b;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    position: relative;
+    margin-bottom: 15px;
+  }
+
+  .cell {
+    background-color: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    border: 3px solid #94a3b8;
+    position: relative;
+    z-index: 1;
+  }
+  .cell.clickable:hover { transform: scale(1.05); border-color: #0d9488; }
+  .cell .name { font-size: 13px; font-weight: bold; margin-top: 2px; color: #1e293b; }
+  .cell.empty { background-color: #e2e8f0; cursor: default; border: 2px dashed #cbd5e1; }
+
+  /* 中心亮燈 highlight */
+  .cell.is-center {
+    border: 3px solid #f59e0b !important;
+    background-color: #fffbeb;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
+  }
+
+  /* 北方標記咭 Overlay */
+  .compass-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 5;
+    display: none;
+  }
+  .compass-overlay.active { display: block; }
+  .compass-cross-h {
+    position: absolute;
+    top: 50%; left: -20px; right: -20px;
+    height: 3px;
+    background: rgba(220, 38, 38, 0.75);
+    transform: translateY(-50%);
+  }
+  .compass-cross-v {
+    position: absolute;
+    left: 50%; top: -20px; bottom: -20px;
+    width: 3px;
+    background: rgba(220, 38, 38, 0.75);
+    transform: translateX(-50%);
+  }
+  .compass-label {
+    position: absolute;
+    background: #dc2626;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .label-n { top: -28px; left: 50%; transform: translateX(-50%); background: #dc2626; }
+  .label-s { bottom: -28px; left: 50%; transform: translateX(-50%); background: #059669; }
+  .label-w { left: -32px; top: 50%; transform: translateY(-50%); background: #0284c7; }
+  .label-e { right: -32px; top: 50%; transform: translateY(-50%); background: #d97706; }
+
+  /* 答題選項區 */
+  .options-area {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .opt-btn {
+    font-size: 17px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 2px solid #0284c7;
+    background-color: white;
+    color: #0284c7;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
+  }
+  .opt-btn:hover { background-color: #0284c7; color: white; transform: scale(1.05); }
+
+  .feedback {
+    margin-top: 15px;
+    font-size: 19px;
+    font-weight: bold;
+    min-height: 38px;
+    text-align: center;
+  }
+  .correct { color: #059669; animation: pop 0.3s ease-out; }
+  .wrong { color: #dc2626; animation: shake 0.3s ease-in-out; }
+
+  @keyframes pop {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    background-color: #e2e8f0;
+    border-radius: 10px;
+    height: 12px;
+    margin-top: 15px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background-color: #0d9488;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #64748b;
+    font-weight: bold;
+  }
+
+  .highlight-center {
+    background-color: #fef08a;
+    border: 2px dashed #f59e0b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #1e293b;
+  }
+</style>
+</head>
+<body>
+
+<div class="header-card">
+  <h1>小二數學：方向與中心位置 綜合平台 🧭🍎</h1>
+  <p class="subtitle">香港小學數學科備課教材（支援弱能力、SEN 及非華語學生分層教學）</p>
+</div>
+
+<!-- 主分頁選項 -->
+<div class="main-tabs">
+  <button class="tab-btn active" id="tab-task1" onclick="switchTask(1)">📍 任務一：判斷中心位置</button>
+  <button class="tab-btn" id="tab-task2" onclick="switchTask(2)">🧭 任務二：水果地圖大尋寶</button>
+</div>
+
+<!-- 遊戲容器 -->
+<div class="game-container">
+  
+  <!-- 子練習選單 -->
+  <div class="sub-tabs">
+    <button class="sub-tab-btn active" id="subtab-p1" onclick="switchPractice(1)">練習一</button>
+    <button class="sub-tab-btn" id="subtab-p2" onclick="switchPractice(2)">練習二（新增練習）</button>
+  </div>
+
+  <!-- 自選題目號選單區 -->
+  <div class="q-selector-card">
+    <div class="q-selector-title">📌 自選題目（點擊數字可自由跳轉）：</div>
+    <div class="q-selector-bar" id="q-selector-bar"></div>
+  </div>
+
+  <!-- 解題提示卡 -->
+  <div class="rule-card" id="rule-card"></div>
+
+  <!-- 工具按鈕列 -->
+  <div class="control-bar">
+    <button class="action-btn btn-speech" onclick="speakQuestion()">🔊 朗讀題目</button>
+    <button class="action-btn btn-compass" id="btn-compass-toggle" onclick="toggleCompass()" style="display:none;">📍 顯示/隱藏北方標記咭</button>
+    <button class="action-btn btn-hint" onclick="toggleHint()">💡 文字提示</button>
+    <button class="action-btn btn-lang" onclick="toggleLang()">🌐 中 / Eng 對照</button>
+    <button class="action-btn btn-reset" onclick="resetGame()">🔄 重新開始</button>
+  </div>
+
+  <div class="compass-tag">【 北 N ↑ 】</div>
+
+  <div class="question-box">
+    <div id="q-text">題目載入中...</div>
+    <div class="q-subhint" id="q-hint" style="display:none;"></div>
+  </div>
+
+  <div class="grid-map" id="map"></div>
+
+  <div class="options-area" id="options-box"></div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="p-bar"></div>
+  </div>
+  <div class="progress-text" id="progress">第 1 題</div>
+
+</div>
+
+<script>
+// --- 資料集定義 ---
+const task1Maps = {
+  1: [
+    { id: 'strawberry', icon: '🍓', zh: '士多啤梨', en: 'Strawberry' },
+    { id: 'orange',     icon: '🍊', zh: '甜橙',       en: 'Orange' },
+    { id: 'empty1',     icon: '',   zh: '',           en: '' },
+    { id: 'grape',      icon: '🍇', zh: '葡萄',       en: 'Grape' },
+    { id: 'apple',      icon: '🍎', zh: '蘋果',       en: 'Apple' },
+    { id: 'banana',     icon: '🍌', zh: '香蕉',       en: 'Banana' },
+    { id: 'empty2',     icon: '',   zh: '',           en: '' },
+    { id: 'watermelon', icon: '🍉', zh: '西瓜',       en: 'Watermelon' },
+    { id: 'empty3',     icon: '',   zh: '',           en: '' }
+  ],
+  2: [
+    { id: 'pineapple',  icon: '🍍', zh: '菠蘿',       en: 'Pineapple' },
+    { id: 'mango',      icon: '🥭', zh: '芒果',       en: 'Mango' },
+    { id: 'empty1',     icon: '',   zh: '',           en: '' },
+    { id: 'cherry',     icon: '🍒', zh: '櫻桃',       en: 'Cherry' },
+    { id: 'kiwi',       icon: '🥝', zh: '奇異果',     en: 'Kiwi' },
+    { id: 'peach',      icon: '🍑', zh: '蜜桃',       en: 'Peach' },
+    { id: 'empty2',     icon: '',   zh: '',           en: '' },
+    { id: 'pear',       icon: '🍐', zh: '青梨',       en: 'Pear' },
+    { id: 'empty3',     icon: '',   zh: '',           en: '' }
+  ]
+};
+
+const task1Questions = {
+  1: [
+    { id: 1, target: "apple",     centerZh: "蘋果", centerEn: "Apple", text: "香蕉在蘋果的東方，請點擊中心位置的水果。", hintText: "香蕉 在 <span class='highlight-center'>蘋果</span> 的 東方" },
+    { id: 2, target: "orange",    centerZh: "甜橙", centerEn: "Orange", text: "士多啤梨在甜橙的西方，請點擊中心位置的水果。", hintText: "士多啤梨 在 <span class='highlight-center'>甜橙</span> 的 西方" },
+    { id: 3, target: "apple",     centerZh: "蘋果", centerEn: "Apple", text: "西瓜在蘋果的南方，請點擊中心位置的水果。", hintText: "西瓜 在 <span class='highlight-center'>蘋果</span> 的 南方" },
+    { id: 4, target: "banana",    centerZh: "香蕉", centerEn: "Banana", text: "葡萄在香蕉的西方，請點擊中心位置的水果。", hintText: "葡萄 在 <span class='highlight-center'>香蕉</span> 的 西方" },
+    { id: 5, target: "watermelon",centerZh: "西瓜", centerEn: "Watermelon", text: "蘋果在西瓜的北方，請點擊中心位置的水果。", hintText: "蘋果 在 <span class='highlight-center'>西瓜</span> 的 北方" },
+    { id: 6, target: "apple",     centerZh: "蘋果", centerEn: "Apple", text: "甜橙在蘋果的北方，請點擊中心位置的水果。", hintText: "甜橙 在 <span class='highlight-center'>蘋果</span> 的 北方" }
+  ],
+  2: [
+    { id: 1, target: "kiwi",      centerZh: "奇異果", centerEn: "Kiwi", text: "櫻桃在奇異果的西方，請點擊中心位置的水果。", hintText: "櫻桃 在 <span class='highlight-center'>奇異果</span> 的 西方" },
+    { id: 2, target: "mango",     centerZh: "芒果",   centerEn: "Mango", text: "菠蘿在芒果的西方，請點擊中心位置的水果。", hintText: "菠蘿 在 <span class='highlight-center'>芒果</span> 的 西方" },
+    { id: 3, target: "kiwi",      centerZh: "奇異果", centerEn: "Kiwi", text: "青梨在奇異果的南方，請點擊中心位置的水果。", hintText: "青梨 在 <span class='highlight-center'>奇異果</span> 的 南方" },
+    { id: 4, target: "kiwi",      centerZh: "奇異果", centerEn: "Kiwi", text: "蜜桃在奇異果的東方，請點擊中心位置的水果。", hintText: "蜜桃 在 <span class='highlight-center'>奇異果</span> 的 東方" },
+    { id: 5, target: "kiwi",      centerZh: "奇異果", centerEn: "Kiwi", text: "芒果在奇異果的北方，請點擊中心位置的水果。", hintText: "芒果 在 <span class='highlight-center'>奇異果</span> 的 北方" },
+    { id: 6, target: "pear",      centerZh: "青梨",   centerEn: "Pear", text: "奇異果在青梨的北方，請點擊中心位置的水果。", hintText: "奇異果 在 <span class='highlight-center'>青梨</span> 的 北方" }
+  ]
+};
+
+const task2Maps = {
+  1: [
+    { id: 'empty1',     icon: '',   zh: '',     en: '' },
+    { id: 'orange',     icon: '🍊', zh: '甜橙', en: 'Orange' },
+    { id: 'lemon',      icon: '🍋', zh: '檸檬', en: 'Lemon' },
+    { id: 'grape',      icon: '🍇', zh: '葡萄', en: 'Grape' },
+    { id: 'apple',      icon: '🍎', zh: '蘋果', en: 'Apple' },
+    { id: 'banana',     icon: '🍌', zh: '香蕉', en: 'Banana' },
+    { id: 'peach',      icon: '🍑', zh: '蜜桃', en: 'Peach' },
+    { id: 'watermelon', icon: '🍉', zh: '西瓜', en: 'Watermelon' },
+    { id: 'empty2',     icon: '',   zh: '',     en: '' }
+  ],
+  2: [
+    { id: 'pineapple',  icon: '🍍', zh: '菠蘿',   en: 'Pineapple' },
+    { id: 'mango',      icon: '🥭', zh: '芒果',   en: 'Mango' },
+    { id: 'empty1',     icon: '',   zh: '',       en: '' },
+    { id: 'cherry',     icon: '🍒', zh: '櫻桃',   en: 'Cherry' },
+    { id: 'kiwi',       icon: '🥝', zh: '奇異果', en: 'Kiwi' },
+    { id: 'strawberry', icon: '🍓', zh: '士多啤梨', en: 'Strawberry' },
+    { id: 'empty2',     icon: '',   zh: '',       en: '' },
+    { id: 'avocado',    icon: '🥑', zh: '牛油果', en: 'Avocado' },
+    { id: 'pear',       icon: '🍐', zh: '青梨',   en: 'Pear' }
+  ]
+};
+
+const task2Questions = {
+  1: [
+    { id: 1, type: 'direction', text: "1. 🍇 葡萄 在 🍎 蘋果 的哪一個方向？", textEn: "1. Where is Grape relative to Apple?", centerId: "apple", centerZh: "蘋果", centerEn: "Apple", correctAnswer: "西", hint: "提示：找到「在」與「的」中間的 🍎 蘋果，把標記咭放在 🍎 上往左看。" },
+    { id: 2, type: 'direction', text: "2. 🍊 甜橙 在 🍎 蘋果 的哪一個方向？", textEn: "2. Where is Orange relative to Apple?", centerId: "apple", centerZh: "蘋果", centerEn: "Apple", correctAnswer: "北", hint: "提示：中心是 🍎 蘋果，把標記咭放在 🍎 上往上看。" },
+    { id: 3, type: 'direction', text: "3. 🍉 西瓜 在 🍑 蜜桃 的哪一個方向？", textEn: "3. Where is Watermelon relative to Peach?", centerId: "peach", centerZh: "蜜桃", centerEn: "Peach", correctAnswer: "東", hint: "提示：找到中心 🍑 蜜桃，把標記咭放在 🍑 上往右看。" },
+    { id: 4, type: 'direction', text: "4. 🍇 葡萄 在 🍑 蜜桃 的哪一個方向？", textEn: "4. Where is Grape relative to Peach?", centerId: "peach", centerZh: "蜜桃", centerEn: "Peach", correctAnswer: "北", hint: "提示：中心是 🍑 蜜桃，把標記咭放在 🍑 上往上看。" },
+    { id: 5, type: 'fruit', text: "5. 在 🍎 蘋果 的 東方 是哪一個水果？", textEn: "5. What is in the East of Apple?", centerId: "apple", centerZh: "蘋果", centerEn: "Apple", correctAnswer: "banana", correctZh: "香蕉 🍌", correctEn: "Banana 🍌", hint: "提示：中心是 🍎 蘋果，往右邊（東）看。" },
+    { id: 6, type: 'fruit', text: "6. 在 🍎 蘋果 的 南方 是哪一個水果？", textEn: "6. What is in the South of Apple?", centerId: "apple", centerZh: "蘋果", centerEn: "Apple", correctAnswer: "watermelon", correctZh: "西瓜 🍉", correctEn: "Watermelon 🍉", hint: "提示：中心是 🍎 蘋果，往下面（南）看。" },
+    { id: 7, type: 'fruit', text: "7. 在 🍊 甜橙 的 東方 是哪一個水果？", textEn: "7. What is in the East of Orange?", centerId: "orange", centerZh: "甜橙", centerEn: "Orange", correctAnswer: "lemon", correctZh: "檸檬 🍋", correctEn: "Lemon 🍋", hint: "提示：中心換成頂層的 🍊 甜橙，往右邊（東）看。" },
+    { id: 8, type: 'fruit', text: "8. 在 🍉 西瓜 的 西方 是哪一個水果？", textEn: "8. What is in the West of Watermelon?", centerId: "watermelon", centerZh: "西瓜", centerEn: "Watermelon", correctAnswer: "peach", correctZh: "蜜桃 🍑", correctEn: "Peach 🍑", hint: "提示：中心換成底層的 🍉 西瓜，往左邊（西）看。" }
+  ],
+  2: [
+    { id: 1, type: 'direction', text: "1. 🍒 櫻桃 在 🥝 奇異果 的哪一個方向？", textEn: "1. Where is Cherry relative to Kiwi?", centerId: "kiwi", centerZh: "奇異果", centerEn: "Kiwi", correctAnswer: "西", hint: "提示：中心是 🥝 奇異果，把標記咭放在 🥝 上往左看。" },
+    { id: 2, type: 'direction', text: "2. 🥭 芒果 在 🥝 奇異果 的哪一個方向？", textEn: "2. Where is Mango relative to Kiwi?", centerId: "kiwi", centerZh: "奇異果", centerEn: "Kiwi", correctAnswer: "北", hint: "提示：中心是 🥝 奇異果，把標記咭放在 🥝 上往上看。" },
+    { id: 3, type: 'direction', text: "3. 🍐 青梨 在 🥑 牛油果 的哪一個方向？", textEn: "3. Where is Pear relative to Avocado?", centerId: "avocado", centerZh: "牛油果", centerEn: "Avocado", correctAnswer: "東", hint: "提示：中心是 🥑 牛油果，把標記咭放在 🥑 上往右看。" },
+    { id: 4, type: 'direction', text: "4. 🍍 菠蘿 在 🍒 櫻桃 的哪一個方向？", textEn: "4. Where is Pineapple relative to Cherry?", centerId: "cherry", centerZh: "櫻桃", centerEn: "Cherry", correctAnswer: "北", hint: "提示：中心是 🍒 櫻桃，把標記咭放在 🍒 上往上看。" },
+    { id: 5, type: 'fruit', text: "5. 在 🥝 奇異果 的 東方 是哪一個水果？", textEn: "5. What is in the East of Kiwi?", centerId: "kiwi", centerZh: "奇異果", centerEn: "Kiwi", correctAnswer: "strawberry", correctZh: "士多啤梨 🍓", correctEn: "Strawberry 🍓", hint: "提示：中心是 🥝 奇異果，往右邊（東）看。" },
+    { id: 6, type: 'fruit', text: "6. 在 🥝 奇異果 的 南方 是哪一個水果？", textEn: "6. What is in the South of Kiwi?", centerId: "kiwi", centerZh: "奇異果", centerEn: "Kiwi", correctAnswer: "avocado", correctZh: "牛油果 🥑", correctEn: "Avocado 🥑", hint: "提示：中心是 🥝 奇異果，往下面（南）看。" },
+    { id: 7, type: 'fruit', text: "7. 在 🍍 菠蘿 的 東方 是哪一個水果？", textEn: "7. What is in the East of Pineapple?", centerId: "pineapple", centerZh: "菠蘿", centerEn: "Pineapple", correctAnswer: "mango", correctZh: "芒果 🥭", correctEn: "Mango 🥭", hint: "提示：中心是 🍍 菠蘿，往右邊（東）看。" },
+    { id: 8, type: 'fruit', text: "8. 在 🥑 牛油果 的 東方 是哪一個水果？", textEn: "8. What is in the East of Avocado?", centerId: "avocado", centerZh: "牛油果", centerEn: "Avocado", correctAnswer: "pear", correctZh: "青梨 🍐", correctEn: "Pear 🍐", hint: "提示：中心是 🥑 牛油果，往右邊（東）看。" }
+  ]
+};
+
+// 全局狀態與答題紀錄
+let currentTask = 1;      // 1 或 2
+let currentPractice = 1;  // 1 或 2
+let currentQIndex = 0;
+let showEnglish = false;
+let showHint = false;
+let compassActive = false;
+
+// 紀錄每組練習的完成狀態 [task][practice][qIndex]
+const completedStatus = {
+  1: { 1: {}, 2: {} },
+  2: { 1: {}, 2: {} }
+};
+
+function switchTask(taskNum) {
+  currentTask = taskNum;
+  currentPractice = 1;
+  currentQIndex = 0;
+  showHint = false;
+  compassActive = false;
+
+  document.getElementById('tab-task1').className = `tab-btn ${taskNum === 1 ? 'active' : ''}`;
+  document.getElementById('tab-task2').className = `tab-btn ${taskNum === 2 ? 'active' : ''}`;
+  
+  document.getElementById('subtab-p1').className = 'sub-tab-btn active';
+  document.getElementById('subtab-p2').className = 'sub-tab-btn';
+
+  document.getElementById('btn-compass-toggle').style.display = (taskNum === 2) ? 'inline-flex' : 'none';
+
+  renderQuestion();
+}
+
+function switchPractice(practiceNum) {
+  currentPractice = practiceNum;
+  currentQIndex = 0;
+  showHint = false;
+  compassActive = false;
+
+  document.getElementById('subtab-p1').className = `sub-tab-btn ${practiceNum === 1 ? 'active' : ''}`;
+  document.getElementById('subtab-p2').className = `sub-tab-btn ${practiceNum === 2 ? 'active' : ''}`;
+
+  renderQuestion();
+}
+
+// 自由跳轉題目
+function jumpToQuestion(index) {
+  currentQIndex = index;
+  showHint = false;
+  compassActive = false;
+  renderQuestion();
+}
+
+// 渲染自選題目數字選單
+function renderQuestionSelector() {
+  const bar = document.getElementById('q-selector-bar');
+  bar.innerHTML = '';
+  const qList = (currentTask === 1) ? task1Questions[currentPractice] : task2Questions[currentPractice];
+
+  qList.forEach((q, idx) => {
+    const btn = document.createElement('button');
+    const isCompleted = completedStatus[currentTask][currentPractice][idx];
+    const isActive = (idx === currentQIndex);
+
+    btn.className = `q-num-btn ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+    btn.innerText = isCompleted ? `${idx + 1}✓` : `${idx + 1}`;
+    btn.onclick = () => jumpToQuestion(idx);
+    bar.appendChild(btn);
+  });
+}
+
+function renderRuleCard() {
+  const ruleCard = document.getElementById('rule-card');
+  if (currentTask === 1) {
+    ruleCard.innerHTML = `💡 <b>任務一口訣</b>：找到「在」和「的」中間的水果，它就是 <b>中心位置</b>！`;
+  } else {
+    ruleCard.innerHTML = `💡 <b>任務二小技巧</b>：先自己找出中心水果，有需要時點擊「📍 顯示/隱藏北方標記咭」檢查！`;
+  }
+}
+
+function renderMap() {
+  const mapEl = document.getElementById('map');
+  mapEl.innerHTML = '';
+
+  const mapData = (currentTask === 1) ? task1Maps[currentPractice] : task2Maps[currentPractice];
+  const qList = (currentTask === 1) ? task1Questions[currentPractice] : task2Questions[currentPractice];
+  const q = qList[currentQIndex];
+
+  mapData.forEach(item => {
+    const cell = document.createElement('div');
+    if (!item.id.startsWith('empty')) {
+      let isCenter = false;
+      if (currentTask === 2) {
+        isCenter = (item.id === q.centerId);
+      }
+
+      const centerClass = (currentTask === 2 && isCenter && compassActive) ? 'is-center' : '';
+      cell.className = `cell ${centerClass}`;
+      cell.id = `cell-${item.id}`;
+      cell.innerHTML = `
+        <div>${item.icon}</div>
+        <div class="name">${showEnglish ? item.en : item.zh}</div>
+      `;
+
+      if (currentTask === 1) {
+        cell.classList.add('clickable');
+        cell.onclick = () => checkAnswer(item.id);
+      } else if (currentTask === 2 && q.type === 'fruit') {
+        cell.classList.add('clickable');
+        cell.onclick = () => checkAnswer(item.id);
+      }
+
+      if (currentTask === 2 && isCenter) {
+        const overlay = document.createElement('div');
+        overlay.className = `compass-overlay ${compassActive ? 'active' : ''}`;
+        overlay.id = 'compass-overlay';
+        overlay.innerHTML = `
+          <div class="compass-cross-h"></div>
+          <div class="compass-cross-v"></div>
+          <div class="compass-label label-n">${showEnglish ? 'N 北' : '北 N'}</div>
+          <div class="compass-label label-s">${showEnglish ? 'S 南' : '南 S'}</div>
+          <div class="compass-label label-w">${showEnglish ? 'W 西' : '西 W'}</div>
+          <div class="compass-label label-e">${showEnglish ? 'E 東' : '東 E'}</div>
+        `;
+        cell.appendChild(overlay);
+      }
+    } else {
+      cell.className = 'cell empty';
+    }
+    mapEl.appendChild(cell);
+  });
+}
+
+function renderOptions() {
+  const optionsBox = document.getElementById('options-box');
+  optionsBox.innerHTML = '';
+
+  if (currentTask === 1) {
+    optionsBox.innerHTML = `<span style="color:#64748b; font-size:14px;">請直接點擊上方地圖中的【中心水果】</span>`;
+  } else {
+    const qList = task2Questions[currentPractice];
+    const q = qList[currentQIndex];
+
+    if (q.type === 'direction') {
+      const dirs = [
+        { zh: '東', en: 'East' },
+        { zh: '南', en: 'South' },
+        { zh: '西', en: 'West' },
+        { zh: '北', en: 'North' }
+      ];
+      dirs.forEach(d => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.innerText = showEnglish ? d.en : `${d.zh}方`;
+        btn.onclick = () => checkAnswer(d.zh);
+        optionsBox.appendChild(btn);
+      });
+    } else {
+      const mapData = task2Maps[currentPractice];
+      const fruits = mapData.filter(f => !f.id.startsWith('empty'));
+      fruits.forEach(f => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.innerText = `${f.icon} ${showEnglish ? f.en : f.zh}`;
+        btn.onclick = () => checkAnswer(f.id);
+        optionsBox.appendChild(btn);
+      });
+    }
+  }
+}
+
+function renderQuestion() {
+  renderRuleCard();
+  renderQuestionSelector();
+
+  const qList = (currentTask === 1) ? task1Questions[currentPractice] : task2Questions[currentPractice];
+  const q = qList[currentQIndex];
+
+  const qBox = document.getElementById('q-text');
+  const hintEl = document.getElementById('q-hint');
+
+  if (currentTask === 1) {
+    if (showHint) {
+      qBox.innerHTML = q.hintText;
+    } else {
+      qBox.innerText = q.text;
+    }
+    hintEl.style.display = 'none';
+  } else {
+    qBox.innerText = showEnglish ? q.textEn : q.text;
+    hintEl.innerText = q.hint;
+    hintEl.style.display = showHint ? 'block' : 'none';
+  }
+
+  document.getElementById('feedback').innerText = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('progress').innerText = `目前顯示第 ${currentQIndex + 1} / ${qList.length} 題`;
+  document.getElementById('p-bar').style.width = `${((currentQIndex + 1) / qList.length) * 100}%`;
+
+  compassActive = false;
+
+  renderMap();
+  renderOptions();
+  speakQuestion();
+}
+
+function checkAnswer(selectedAns) {
+  const qList = (currentTask === 1) ? task1Questions[currentPractice] : task2Questions[currentPractice];
+  const q = qList[currentQIndex];
+  const feedbackEl = document.getElementById('feedback');
+  let isCorrect = false;
+
+  if (currentTask === 1) {
+    isCorrect = (selectedAns === q.target);
+  } else {
+    if (q.type === 'direction') {
+      isCorrect = (selectedAns === q.correctAnswer);
+    } else {
+      isCorrect = (selectedAns === q.correctAnswer);
+    }
+  }
+
+  if (isCorrect) {
+    // 標記此題已完成
+    completedStatus[currentTask][currentPractice][currentQIndex] = true;
+    renderQuestionSelector();
+
+    feedbackEl.className = 'feedback correct';
+    let ansName = "";
+    if (currentTask === 1) {
+      ansName = showEnglish ? q.centerEn : q.centerZh;
+    } else {
+      ansName = (q.type === 'direction') ? `${selectedAns}方` : (showEnglish ? q.correctEn : q.correctZh);
+    }
+    feedbackEl.innerText = `🎉 答對了！正確答案是【${ansName}】`;
+
+    // 檢查是否全部完成
+    const allDone = qList.every((_, idx) => completedStatus[currentTask][currentPractice][idx]);
+
+    setTimeout(() => {
+      if (allDone) {
+        feedbackEl.className = 'feedback correct';
+        feedbackEl.innerText = `🏆 太棒了！你順利完成了任務${currentTask === 1 ? '一' : '二'}（練習${currentPractice === 1 ? '一' : '二'}）的所有題目！`;
+      } else {
+        // 自動跳至下一條未完成的題目
+        let nextIdx = (currentQIndex + 1) % qList.length;
+        while (completedStatus[currentTask][currentPractice][nextIdx] && nextIdx !== currentQIndex) {
+          nextIdx = (nextIdx + 1) % qList.length;
+        }
+        currentQIndex = nextIdx;
+        renderQuestion();
+      }
+    }, 1600);
+  } else {
+    feedbackEl.className = 'feedback wrong';
+    if (currentTask === 1) {
+      feedbackEl.innerText = '❌ 再試一次！記得找出「在……的」中間的水果喔！';
+    } else {
+      feedbackEl.innerText = '❌ 再試一次！可以試試點擊「📍 顯示北方標記 genetically」來輔助思考喔！';
+    }
+  }
+}
+
+function speakQuestion() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const qList = (currentTask === 1) ? task1Questions[currentPractice] : task2Questions[currentPractice];
+    const q = qList[currentQIndex];
+    const utterance = new SpeechSynthesisUtterance(q.text);
+    utterance.lang = 'zh-HK';
+    utterance.rate = 0.85;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function toggleCompass() {
+  if (currentTask === 2) {
+    compassActive = !compassActive;
+    renderMap();
+  }
+}
+
+function toggleHint() {
+  showHint = !showHint;
+  renderQuestion();
+}
+
+function toggleLang() {
+  showEnglish = !showEnglish;
+  renderQuestion();
+}
+
+function resetGame() {
+  currentQIndex = 0;
+  showHint = false;
+  compassActive = false;
+  completedStatus[currentTask][currentPractice] = {};
+  renderQuestion();
+}
+
+// 初始化
+switchTask(1);
+</script>
+</body>
+</html>
