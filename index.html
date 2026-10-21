@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>小二數學：方向與中心位置 綜合互動學習平台</title>
+<title>小二數學：方向與中心位置 趣味學習平台</title>
 <style>
   * {
     box-sizing: border-box;
@@ -29,7 +29,7 @@
     width: 95%;
   }
   h1 { color: #2c3e50; font-size: 24px; margin: 0 0 6px 0; }
-  .subtitle { font-size: 14px; color: #7f8c8d; margin: 0; }
+  .subtitle { font-size: 15px; color: #0d9488; font-weight: bold; margin: 0; }
 
   /* 主分頁切換 Tabs */
   .main-tabs {
@@ -386,8 +386,8 @@
 <body>
 
 <div class="header-card">
-  <h1>小二數學：方向與中心位置 綜合平台 🧭🍎</h1>
-  <p class="subtitle">香港小學數學科備課教材（支援弱能力、SEN 及非華語學生分層教學）</p>
+  <h1>小二數學：方向與中心位置 趣味學習平台 🧭🍎</h1>
+  <p class="subtitle">🌟 輕鬆學方向 ‧ 快樂大尋寶 🌟</p>
 </div>
 
 <!-- 主分頁選項 -->
@@ -402,7 +402,7 @@
   <!-- 子練習選單 -->
   <div class="sub-tabs">
     <button class="sub-tab-btn active" id="subtab-p1" onclick="switchPractice(1)">練習一</button>
-    <button class="sub-tab-btn" id="subtab-p2" onclick="switchPractice(2)">練習二（新增練習）</button>
+    <button class="sub-tab-btn" id="subtab-p2" onclick="switchPractice(2)">練習二</button>
   </div>
 
   <!-- 自選題目號選單區 -->
@@ -538,14 +538,13 @@ const task2Questions = {
 };
 
 // 全局狀態與答題紀錄
-let currentTask = 1;      // 1 或 2
-let currentPractice = 1;  // 1 或 2
+let currentTask = 1;
+let currentPractice = 1;
 let currentQIndex = 0;
 let showEnglish = false;
 let showHint = false;
 let compassActive = false;
 
-// 紀錄每組練習的完成狀態 [task][practice][qIndex]
 const completedStatus = {
   1: { 1: {}, 2: {} },
   2: { 1: {}, 2: {} }
@@ -560,10 +559,8 @@ function switchTask(taskNum) {
 
   document.getElementById('tab-task1').className = `tab-btn ${taskNum === 1 ? 'active' : ''}`;
   document.getElementById('tab-task2').className = `tab-btn ${taskNum === 2 ? 'active' : ''}`;
-  
   document.getElementById('subtab-p1').className = 'sub-tab-btn active';
   document.getElementById('subtab-p2').className = 'sub-tab-btn';
-
   document.getElementById('btn-compass-toggle').style.display = (taskNum === 2) ? 'inline-flex' : 'none';
 
   renderQuestion();
@@ -581,7 +578,6 @@ function switchPractice(practiceNum) {
   renderQuestion();
 }
 
-// 自由跳轉題目
 function jumpToQuestion(index) {
   currentQIndex = index;
   showHint = false;
@@ -589,7 +585,6 @@ function jumpToQuestion(index) {
   renderQuestion();
 }
 
-// 渲染自選題目數字選單
 function renderQuestionSelector() {
   const bar = document.getElementById('q-selector-bar');
   bar.innerHTML = '';
@@ -759,7 +754,6 @@ function checkAnswer(selectedAns) {
   }
 
   if (isCorrect) {
-    // 標記此題已完成
     completedStatus[currentTask][currentPractice][currentQIndex] = true;
     renderQuestionSelector();
 
@@ -772,7 +766,6 @@ function checkAnswer(selectedAns) {
     }
     feedbackEl.innerText = `🎉 答對了！正確答案是【${ansName}】`;
 
-    // 檢查是否全部完成
     const allDone = qList.every((_, idx) => completedStatus[currentTask][currentPractice][idx]);
 
     setTimeout(() => {
@@ -780,7 +773,6 @@ function checkAnswer(selectedAns) {
         feedbackEl.className = 'feedback correct';
         feedbackEl.innerText = `🏆 太棒了！你順利完成了任務${currentTask === 1 ? '一' : '二'}（練習${currentPractice === 1 ? '一' : '二'}）的所有題目！`;
       } else {
-        // 自動跳至下一條未完成的題目
         let nextIdx = (currentQIndex + 1) % qList.length;
         while (completedStatus[currentTask][currentPractice][nextIdx] && nextIdx !== currentQIndex) {
           nextIdx = (nextIdx + 1) % qList.length;
@@ -794,7 +786,7 @@ function checkAnswer(selectedAns) {
     if (currentTask === 1) {
       feedbackEl.innerText = '❌ 再試一次！記得找出「在……的」中間的水果喔！';
     } else {
-      feedbackEl.innerText = '❌ 再試一次！可以試試點擊「📍 顯示北方標記 genetically」來輔助思考喔！';
+      feedbackEl.innerText = '❌ 再試一次！可以試試點擊「📍 顯示北方標記咭」來輔助思考喔！';
     }
   }
 }
